@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Case: Försäkringskostnader – analysera vilka faktorer som hänger ihop med kostnader</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="rapport_files/libs/clipboard/clipboard.min.js"></script>
+<script src="rapport_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="rapport_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="rapport_files/libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="rapport_files/libs/quarto-html/popper.min.js"></script>
+<script src="rapport_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="rapport_files/libs/quarto-html/anchor.min.js"></script>
+<link href="rapport_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="rapport_files/libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="rapport_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="rapport_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="rapport_files/libs/bootstrap/bootstrap-9e3ffae467580fdb927a41352e75a2e0.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Case: Försäkringskostnader – analysera vilka faktorer som hänger ihop med kostnader</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p><strong>Mål och syfte</strong></p>
+<p>Syftet med analysen är att undersöka vilka variabler som har störst samband med försäkringskostnader (charges) samt att identifiera vilka faktorer som bäst förklarar variationen i kostnader mellan kunder. Fokus ligger på att analysera livsstilsfaktorer, hälsotillstånd och tidigare försäkringshistorik genom regressionsanalys. Analysen strävar efter att skapa en förklaringsmodell som kan användas som beslutsstöd för prissätning och riskbedömning.</p>
+<p><strong>Metod</strong></p>
+<p>Analysen genomfördes i programmeringsspråket R med hjälp av ekosystemet <strong>tidyverse</strong>. Arbetsprocessen delades upp i följande steg: 1. <strong>Datastädning</strong>: De saknade värdena i <em>bmi</em> och <em>annual_checkups</em> hanterades genom median medianimputering för att bevara datans centrala mått utan att påverkas av extremvärden. Textvariabler standardiserades för konsekvent gruppering.</p>
+<ol start="2" type="1">
+<li><p><strong>Feature Engineering</strong>: Nya kategoriska variabler skapades<em>(bmi_cat, age_group)</em> för att möjliggöra tydligare gruppjämförelser.</p></li>
+<li><p><strong>Explorativ dataanalys (EDA)</strong>: Statistiska sammanfattningar och visualiseringar(histogram, boxplots och scatterplots) användes för att förstå kostnadernas fördelning och identifiera eventuella samvariationer.</p></li>
+<li><p><strong>Regressionsanalys</strong>: Tre linjära modeller byggdes stegvis för att utvärdera hur olika variabelgrupper(demografi, hälsa och historik) bidrar till att förklara kostnaden.</p></li>
+</ol>
+<p><strong>Resultat</strong></p>
+<p>Den explorativa analysen visar att försäkringskostnaderna är kraftigt <em>högerskeva</em>. Det innebär att en majoritet av kunderna har låga kostnader medan ett fåtal “outliers” står de för mycket höga kostnaderna.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="rapport_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>-<strong>Rökning</strong>: Visade sig vara den enskilt mest avgörande faktorn, där rökare ligger i ett betydligt högre kostnadsskit oavsett ålder.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="rapport_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>-<strong>BMI och Ålder</strong>: Båda variablerna uppvisar en positiv samvariation med kostnad, där högre BMI och högre ålder korrelerar med en högre kostnad.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="rapport_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="rapport_files/figure-html/unnamed-chunk-4-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Regresionsanalys(Modelvall och tolkning)</strong></p>
+<p>Den slutgiltiga modellen (Modell 3) inkluderar variablerna <strong>age, smoker, bmi, chronic_condition, exercise_level, prior_accidents</strong> och <strong>prior_claims</strong>.</p>
+<p>-<strong>Modellprestanda</strong>: Modellen förklarar <strong>73,12% av variationen</strong> i kostnader(Adjusted R-squared = 0,7312), vilket anses vara en stark förklaringsgrad för denna typ av data.</p>
+<p>-<strong>Viktigaste prediktorer</strong>: Rökning ökar den förväntade kostnaden med ca <strong>7 393 enheter</strong>, och kroniskt tillstånd med ca <strong>3 961 enheter</strong>, när övriga faktorer hålls konstanta. Tidigare olyckor och anspråk är också statistisk signifikanta och bidrar till högre kostnadsuppskattningar.</p>
+<p><strong>Tolkning och slutsatser</strong></p>
+<p><strong>Vilka faktorer som verkar ha tydligast samband med kostnader?</strong> Analysen visar att rökning är den enskilt kraftigaste faktorn för försäkringskostnaden. Att vara rökare ökar den förväntade kostnaden med <strong>7393</strong> enheter om allt annat är lika(model_3). Det kroniska tillståndet(chronic_condition) har också ett mycket starkt samband och ökar kostnaden med 3961 enheter (model_3). “Historik”-variablerna tidigare olyckor och tidigare anspråk visar också tydliga och statistiskt signifikanta samband. Varje incident ökar de förväntade kostnaderna markant(1057 och 899 enheter)</p>
+<p><strong>Vad analysen visar?</strong> Model_3 är den starkaste och blir den slutgiltiga modellen. Den har högst förklaringsgrad för variationen(drygt 73%) och lägst residual error.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="rapport_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Analysen visar att kostnaderna drivs av en kombination av tre dimensioner: livsstil(rökning), biologiska faktorer(ålder och BMI) och historiskt riskbeteende(tidigare skador och anspråk). Visualiseringarna bekräftar att datan är högerskev, vilket innebär att en majoritet av kunderna har relativt låga kostnader medan en liten grupp står för de högsta kostnaderna.</p>
+<p><strong>Vad modellen inte fångar?</strong></p>
+<ul>
+<li><strong>Extremvärden</strong>: Modellen har svårt att fånga de allra dyraste fallen rätt. Det blir tydligt då residualerna stäcker sig upp till från -9 006 till +17 702</li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="rapport_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li><p><strong>icke-linjära samband</strong>: Modellen antar att kostnaderna ökar linjärt med ålder och BMI. I verkligheten kan dock kostnaderna öka exponentiellt vid t.ex extrem BMI eller väldigt hög ålder.</p></li>
+<li><p><strong>Övriga varibler</strong>: Analysen saknar infomation om andra livstillsval, ärftliga faktorer eller mer detaljerad medicinsk historik som sannolikt påverkar charges.</p></li>
+</ul>
+<p><strong>Vilka förbättringar som hade kunnat göras?</strong> - <strong>Log-transformering</strong>: Genom att log-transformera den beroende variabeln(charges) hade skevheten i datan kunnat hanteras bättre och påverkan från extremvärden hade minskat.</p>
+<ul>
+<li><p><strong>Interaktionseffekter</strong>: Att undersöka eller inkludera ett samspel mellan variabler som t.ex smoker * bmi hade kunnat fånga upp om rökning är extra kostsamt för kunder med högt BMI.</p></li>
+<li><p><strong>Fler prediktorer</strong>: Att inkludera variabler som plan_type, annual_checkups eller annan data skulle kunna höja modellens förklaringsgrad mer.</p></li>
+</ul>
+<p><strong>Sammanfattningsvis</strong> är model_3 ett bra verktyg för att förstå de genomsnittliga drivkrafterna bakom försäkringskostnader. Modellen förklarar dock inte hela variationen och bör användas med försiktighet när det kommer till att förutsäga kostnader för enskilda individer med extrema kostnader.</p>
+<p><strong>Självreflektion</strong></p>
+<p><strong>Vad tycker du att du gjorde bra i uppgiften?</strong> Jag är nöjd med den systematiska processen i datastädningen och modellbygget. Istället för att bara hoppa till analysen lade jag stor vikt vid att förbereda datan genom att hantera saknade värden med medianimputering för att bevara datans fördelning. Jag skapade också nya variabler(bmi_cat och age_group) som gav analysen mer djup. Mitt stegvisa tillvägagångsätt i regressionsanalysen, där jag jämförde tre olika modeller, gjorde det tydligt hur en grupp av variabler bidrog till att förklara försäkringskostnaderna.</p>
+<p><strong>Vad var svårast?</strong> Det svåraste var att tolka residualdiagnostiken och förstå vad avvikelserna i QQ-plotten och spridningen i residualplotten faktiskt innebar för modellens tillförlitlighet. Att balansera mellan en statistiskt stark modell(högt r-squared) och att samtidigt vara medveten om dess begränsningar när det gäller att förutsäga extremvärden krävde en del kritiskt tänkande.</p>
+<p><strong>Vilket betyg tycker du att din inlämning motsvara, G eller VG?</strong> Jag anser att min inlämning motsvarar <strong>VG</strong>.</p>
+<p><strong>Motivering</strong> Jag anser att jag har uppfyllt samtliga kriterier för <strong>Godkänd</strong> genom en relevant analys, tydlig struktur och rimliga slutsatser. Utöver detta har jag uppfyllt VG-kriterierna genom att:</p>
+<p>-<strong>Fördjupad regressionsanalys</strong>: Jag har jämfört inte bara två utan <strong>tre olika modeller</strong> och motiverat valet av den slutgiltiga modellen baserat på förbättringar i <strong>Adjuster R-squared</strong> (från 0,54 till 0,73) och minskat <strong>Residual Standard Error</strong>.</p>
+<p>-<strong>Kritiskt resonemang</strong>: Jag har fört en djupgående diskussion om modellens begränsningar, såsom dess svårighet att hantera extrema outliers och den skevhet som synns i residualanalysen.</p>
+<p>-<strong>Tolkning och slutsatser</strong>: Jag har identifierat tydliga förbättringsförslag, som <strong>log-transformering</strong> av kostnadsvariabeln för att hantera skevhet och inkludering av <strong>interaktionseffekter</strong> mellan rökning och BMI.</p>
+<p>-<strong>Säker tolkning</strong>: Jag har tolkat koefficienterna för både numeriska och kategoriska variabler på ett korrekt sätt, inklusive referenskategorier i den multipla modellen.</p>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
